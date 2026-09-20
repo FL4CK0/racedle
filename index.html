@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<!-- ThinkFast: loads questions from questions.json (must sit next to this file when hosted). Includes a scripted demo ghost. -->
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"><meta name="theme-color" content="#132326"><title>ThinkFast — The daily road rally</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<canvas id="world" aria-hidden="true"></canvas><div class="grain" aria-hidden="true"></div>
+<header class="site-header"><a class="wordmark" href="#" onclick="event.preventDefault(); location.reload()" aria-label="ThinkFast home">thinkfast<span class="speed-mark">///</span><span class="brand-caption">TRIVIA × MOTORSPORT</span></a><div class="edition"><span class="live-dot"></span> DAILY RALLY <span id="race-number">001</span></div><nav aria-label="Game settings"><button id="help-btn" class="text-btn">How to play ↗</button><button id="sound-btn" class="icon-btn" aria-label="Turn sound on" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path id="sound-path" d="m16 9 6 6m0-6-6 6"/></svg></button><button id="motion-btn" class="icon-btn" aria-label="Reduce motion" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h4v12H5zm10 0h4v12h-4z"/></svg></button></nav></header>
+<main>
+<section id="start-screen" class="intro"><div class="eyebrow"><span class="small-checker"></span> <span id="eyebrow-text">14 QUESTIONS. ONE SHOT.</span></div><h1 id="hero-title">THINK FAST.<br><em>DRIVE FASTER.</em></h1><p class="intro-copy" id="intro-copy">Your knowledge is your accelerator. Get it right,<br class="desktop-only"> pick up speed. Keep your streak. Chase the horizon.</p><button class="primary-btn" id="start-btn">Start your engines <span>→</span></button><div class="race-facts"><span>14 questions</span><i></i><span>140 seconds</span><i></i><span id="fact-3">Full throttle</span></div></section>
+<aside id="route-preview" class="route-preview" aria-label="Today's route"><div class="eyebrow">TODAY’S ROUTE <span id="date-display"></span></div><h2>Four stages.<br>One fast mind.</h2><ol><li><span class="route-node active"></span><div>Coastal cruise<small>Salt air. A fresh start.</small></div><span>01</span></li><li><span class="route-node"></span><div>Desert dash<small>Turn up the heat.</small></div><span>02</span></li><li><span class="route-node"></span><div>Alpine ascent<small>Find your next gear.</small></div><span>03</span></li><li><span class="route-node"></span><div>Midnight run<small>Finish under the stars.</small></div><span>04</span></li></ol><div class="route-bottom">SAME QUESTIONS. SAME ROAD. YOUR RACE.</div></aside>
+<section id="quiz-screen" class="quiz hidden" aria-labelledby="question-text"><div class="question-meta"><span id="progress-display">QUESTION 01 / 14</span><span>GENERAL KNOWLEDGE</span></div><div class="timer-track" role="progressbar" aria-label="Time remaining" aria-valuemin="0" aria-valuemax="140" aria-valuenow="140"><div id="timer-bar"></div></div><h2 id="question-text" tabindex="-1"></h2><div id="answer-buttons" class="answers"></div><div class="question-footer"><span id="feedback" role="status">Pick an answer. Pick up speed.</span><span class="keyboard-hint">USE KEYS <kbd>1</kbd>–<kbd>4</kbd></span></div></section>
+<section id="end-screen" class="results hidden" aria-labelledby="result-title"><div class="eyebrow"><span class="small-checker"></span> DAILY RALLY COMPLETE</div><h2 id="result-title">What a ride.</h2><p id="final-status"></p><div class="result-stats"><div><strong id="final-score">0</strong><span>POINTS</span></div><div><strong id="final-correct">0/14</strong><span>CORRECT</span></div><div><strong id="final-speed">0</strong><span>TOP KM/H</span></div></div><div id="result-dots" aria-label="Answer results"></div><div class="ghost-name-row"><label for="ghost-name">Name your ghost car</label><input id="ghost-name" maxlength="16" placeholder="RACER" autocomplete="off" spellcheck="false"></div><div class="result-actions"><button class="primary-btn" id="share-btn">Copy results + link <span>↗</span></button><button class="secondary-btn" id="replay-btn">Race again</button></div><p id="share-status" role="status"></p></section>
+</main>
+<div class="circuit-tag" aria-hidden="true"><span class="live-dot"></span> FOLLOW CAM <span id="biome-indicator">COAST</span></div><div class="location-label"><span class="location-line"></span><div><span id="stage-number">STAGE 01 / 04</span><strong id="stage-name">Coastal cruise</strong></div></div><div id="boost-label" class="boost-label" role="status"></div>
+<footer class="dashboard"><div class="speedometer"><span class="dash-label">SPEED</span><div><strong id="speed-display">0</strong><span>KM/H</span></div><div class="speed-bars" aria-hidden="true"></div></div><div class="journey"><div class="journey-labels"><span id="journey-label">THE GRID IS YOURS.</span><span id="distance-display">AWAITING DRIVER</span></div><div class="journey-track"><div id="journey-fill"></div><span class="journey-marker" id="journey-marker">▸</span><span class="finish-mark">▦</span></div><div class="journey-stages"><span>COAST</span><span>DESERT</span><span>ALPINE</span><span>MIDNIGHT</span></div></div><div class="dash-stat"><span class="dash-label">SCORE</span><strong id="score-display">0000</strong><span id="streak-display">BUILD YOUR STREAK</span></div><div class="dash-stat time-stat"><span class="dash-label">TIME LEFT</span><strong id="time-display">2:20</strong><span>EVERY SECOND COUNTS</span></div></footer>
+<dialog id="help-dialog"><button class="close-btn" id="close-help" aria-label="Close instructions">×</button><div class="eyebrow">THE DRIVER’S HANDBOOK</div><h2>Think quick.<br>Go places.</h2><ol><li><strong>Answer to accelerate.</strong> Correct answers add 15 km/h. A miss takes off 20 km/h.</li><li><strong>Find your flow.</strong> Every three correct answers in a row earn a 15 km/h boost. Quick answers earn more points.</li><li><strong>Enjoy the scenery.</strong> Work through 14 questions and four landscapes before the 140-second clock runs out.</li></ol><p>Everyone gets the same daily grid, refreshed at midnight UTC. Click, tap, or press 1–4. Sound is optional. You can reduce motion anytime. The clock keeps running while instructions are open.</p><button id="got-it" class="primary-btn">Got it. Let’s go. <span>↗</span></button></dialog>
+<script src="script.js"></script><script type="text/plain" id="embedded-font-licenses">
+Barlow Condensed
+
+Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow)
+
+This Font Software is licensed under the SIL Open Font License, Version 1.1.
+This license is copied below, and is also available with a FAQ at:
+http://scripts.sil.org/OFL
+
+
+-----------------------------------------------------------
+SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
+-----------------------------------------------------------
+
+PREAMBLE
+The goals of the Open Font License (OFL) are to stimulate worldwide
+development of collaborative font projects, to support the font creation
+efforts of academic and linguistic communities, and to provide a free and
+open framework in which fonts may be shared and improved in partnership
+with others.
+
+The OFL allows the licensed fonts to be used, studied, modified and
+redistributed freely as long as they are not sold by themselves. The
+fonts, including any derivative works, can be bundled, embedded, 
+redistributed and/or sold with any software provided that any reserved
+names are not used by derivative works. The fonts and derivatives,
+however, cannot be released under any other type of license. The
+requirement for fonts to remain under this license does not apply
+to any document created using the fonts or their derivatives.
+
+DEFINITIONS
+"Font Software" refers to the set of files released by the Copyright
+Holder(s) under this license and clearly marked as such. This may
+include source files, build scripts and documentation.
+
+"Reserved Font Name" refers to any names specified as such after the
+copyright statement(s).
+
+"Original Version" refers to the collection of Font Software components as
+distributed by the Copyright Holder(s).
+
+"Modified Version" refers to any derivative made by adding to, deleting,
+or substituting -- in part or in whole -- any of the components of the
+Original Version, by changing formats or by porting the Font Software to a
+new environment.
+
+"Author" refers to any designer, engineer, programmer, technical
+writer or other person who contributed to the Font Software.
+
+PERMISSION & CONDITIONS
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of the Font Software, to use, study, copy, merge, embed, modify,
+redistribute, and sell modified and unmodified copies of the Font
+Software, subject to the following conditions:
+
+1) Neither the Font Software nor any of its individual components,
+in Original or Modified Versions, may be sold by itself.
+
+2) Original or Modified Versions of the Font Software may be bundled,
+redistributed and/or sold with any software, provided that each copy
+contains the above copyright notice and this license. These can be
+included either as stand-alone text files, human-readable headers or
+in the appropriate machine-readable metadata fields within text or
+binary files as long as those fields can be easily viewed by the user.
+
+3) No Modified Version of the Font Software may use the Reserved Font
+Name(s) unless explicit written permission is granted by the corresponding
+Copyright Holder. This restriction only applies to the primary font name as
+presented to the users.
+
+4) The name(s) of the Copyright Holder(s) or the Author(s) of the Font
+Software shall not be used to promote, endorse or advertise any
+Modified Version, except to acknowledge the contribution(s) of the
+Copyright Holder(s) and the Author(s) or with their explicit written
+permission.
+
+5) The Font Software, modified or unmodified, in part or in whole,
+must be distributed entirely under this license, and must not be
+distributed under any other license. The requirement for fonts to
+remain under this license does not apply to any document created
+using the Font Software.
+
+TERMINATION
+This license becomes null and void if any of the above conditions are
+not met.
+
+DISCLAIMER
+THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
+OF COPYRIGHT, PATENT, TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL THE
+COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
+DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
+OTHER DEALINGS IN THE FONT SOFTWARE.
+
+
+DM Sans
+
+Copyright 2014 The DM Sans Project Authors (https://github.com/googlefonts/dm-fonts)
+
+
+
+This Font Software is licensed under the SIL Open Font License, Version 1.1.
+
+This license is copied below, and is also available with a FAQ at:
+
+https://scripts.sil.org/OFL
+
+
+
+
+
+-----------------------------------------------------------
+
+SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
+
+-----------------------------------------------------------
+
+
+
+PREAMBLE
+
+The goals of the Open Font License (OFL) are to stimulate worldwide
+
+development of collaborative font projects, to support the font creation
+
+efforts of academic and linguistic communities, and to provide a free and
+
+open framework in which fonts may be shared and improved in partnership
+
+with others.
+
+
+
+The OFL allows the licensed fonts to be used, studied, modified and
+
+redistributed freely as long as they are not sold by themselves. The
+
+fonts, including any derivative works, can be bundled, embedded, 
+
+redistributed and/or sold with any software provided that any reserved
+
+names are not used by derivative works. The fonts and derivatives,
+
+however, cannot be released under any other type of license. The
+
+requirement for fonts to remain under this license does not apply
+
+to any document created using the fonts or their derivatives.
+
+
+
+DEFINITIONS
+
+"Font Software" refers to the set of files released by the Copyright
+
+Holder(s) under this license and clearly marked as such. This may
+
+include source files, build scripts and documentation.
+
+
+
+"Reserved Font Name" refers to any names specified as such after the
+
+copyright statement(s).
+
+
+
+"Original Version" refers to the collection of Font Software components as
+
+distributed by the Copyright Holder(s).
+
+
+
+"Modified Version" refers to any derivative made by adding to, deleting,
+
+or substituting -- in part or in whole -- any of the components of the
+
+Original Version, by changing formats or by porting the Font Software to a
+
+new environment.
+
+
+
+"Author" refers to any designer, engineer, programmer, technical
+
+writer or other person who contributed to the Font Software.
+
+
+
+PERMISSION & CONDITIONS
+
+Permission is hereby granted, free of charge, to any person obtaining
+
+a copy of the Font Software, to use, study, copy, merge, embed, modify,
+
+redistribute, and sell modified and unmodified copies of the Font
+
+Software, subject to the following conditions:
+
+
+
+1) Neither the Font Software nor any of its individual components,
+
+in Original or Modified Versions, may be sold by itself.
+
+
+
+2) Original or Modified Versions of the Font Software may be bundled,
+
+redistributed and/or sold with any software, provided that each copy
+
+contains the above copyright notice and this license. These can be
+
+included either as stand-alone text files, human-readable headers or
+
+in the appropriate machine-readable metadata fields within text or
+
+binary files as long as those fields can be easily viewed by the user.
+
+
+
+3) No Modified Version of the Font Software may use the Reserved Font
+
+Name(s) unless explicit written permission is granted by the corresponding
+
+Copyright Holder. This restriction only applies to the primary font name as
+
+presented to the users.
+
+
+
+4) The name(s) of the Copyright Holder(s) or the Author(s) of the Font
+
+Software shall not be used to promote, endorse or advertise any
+
+Modified Version, except to acknowledge the contribution(s) of the
+
+Copyright Holder(s) and the Author(s) or with their explicit written
+
+permission.
+
+
+
+5) The Font Software, modified or unmodified, in part or in whole,
+
+must be distributed entirely under this license, and must not be
+
+distributed under any other license. The requirement for fonts to
+
+remain under this license does not apply to any document created
+
+using the Font Software.
+
+
+
+TERMINATION
+
+This license becomes null and void if any of the above conditions are
+
+not met.
+
+
+
+DISCLAIMER
+
+THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF
+
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
+
+OF COPYRIGHT, PATENT, TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL THE
+
+COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+
+INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
+
+DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+
+FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
+
+OTHER DEALINGS IN THE FONT SOFTWARE.
+</script>
+</body></html>
