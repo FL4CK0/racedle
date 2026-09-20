@@ -12,6 +12,7 @@ let allQuestions = [];
   const CURB_WIDTH = ROAD_WIDTH + 10;
   const MOVEMENT_SCALE = 1.25;
   const BOOST_DURATION = 1.35;
+  const GHOST_FLASH_DURATION = .65;
   const CAMERA_ANGLE = 0.43;
   const themes = [
     { name: 'COAST', ground: '#668876', light: '#769582', dark: '#4b7161', tree: '#335d4b', crown: '#568365', sand: '#c2bca0', road: '#344244', water: '#376f78', rock: '#839084' },
@@ -23,6 +24,7 @@ let allQuestions = [];
   let distance = 0, speed = 0, target = 0, last = 0, boost = 0, skid = 0, frame = 0;
   let ghostSchedule = [], ghostName = 'DEMO GHOST', ghostIndex = 0, ghostElapsed = 0;
   let ghostSpeed = 0, ghostTarget = 0, ghostDistance = 0, ghostStreak = 0, ghostBoost = 0, ghostRunning = false;
+  let ghostFlash = 0, ghostFlashCorrect = true;
   let currentBiome = 0, requestedBiome = 0, transition = null;
   let reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const speedDisplay = document.getElementById('speed-display');
@@ -291,6 +293,18 @@ let allQuestions = [];
     const position = project(roadX(s) + 32, s, view);
     const angle = Math.atan2(-1, roadSlope(s)) + CAMERA_ANGLE;
     ctx.save(); ctx.translate(position.x,position.y); ctx.scale(view.scale,view.scale); ctx.rotate(angle);
+    if (ghostFlash > 0) {
+      const progress = Math.min(1, ghostFlash / GHOST_FLASH_DURATION);
+      const rgb = ghostFlashCorrect ? '110,255,170' : '255,110,95';
+      ctx.save();
+      ctx.setLineDash([]);
+      ctx.shadowColor = `rgba(${rgb},.95)`;
+      ctx.shadowBlur = 10 + 18 * progress;
+      ctx.strokeStyle = `rgba(${rgb},${.3 + .6 * progress})`;
+      ctx.lineWidth = 3 + 1.5 * progress;
+      ctx.beginPath(); ctx.roundRect(-34,-21,68,42,11); ctx.stroke();
+      ctx.restore();
+    }
     ctx.globalAlpha = .42; carBody(ctx,true);
     ctx.globalAlpha = .8; ctx.strokeStyle = '#a9eff4'; ctx.lineWidth = .8;
     ctx.setLineDash([3,3]); ctx.beginPath(); ctx.roundRect(-27,-15,54,30,5); ctx.stroke();
@@ -360,10 +374,12 @@ let allQuestions = [];
         const event = ghostSchedule[ghostIndex];
         if (event.correct) { ghostStreak++; const streakBoost = ghostStreak%3===0; ghostTarget = Math.min(300, ghostTarget + 15 + (streakBoost?15:0)); ghostBoost = BOOST_DURATION; }
         else { ghostStreak = 0; ghostTarget = Math.max(15, ghostTarget - 20); }
+        ghostFlash = GHOST_FLASH_DURATION; ghostFlashCorrect = event.correct;
         ghostIndex++;
       }
     }
     ghostBoost = Math.max(0, ghostBoost - dt);
+    ghostFlash = Math.max(0, ghostFlash - dt);
     ghostSpeed += (ghostTarget-ghostSpeed) * (1-Math.exp(-dt*7));
     ghostDistance += reduced ? 0 : ghostSpeed * dt * MOVEMENT_SCALE * (1+.5*ghostBoost/BOOST_DURATION);
     // Crossfades follow elapsed time even when a background tab throttles frames.
@@ -378,7 +394,7 @@ let allQuestions = [];
   }
 
   window.RaceWorld = {
-    reset() { distance=0; speed=0; target=0; boost=0; skid=0; currentBiome=0; requestedBiome=0; transition=null; ghostDistance=0; ghostSpeed=0; ghostTarget=30; ghostIndex=0; ghostElapsed=0; ghostStreak=0; ghostBoost=0; ghostRunning=false; },
+    reset() { distance=0; speed=0; target=0; boost=0; skid=0; currentBiome=0; requestedBiome=0; transition=null; ghostDistance=0; ghostSpeed=0; ghostTarget=30; ghostIndex=0; ghostElapsed=0; ghostStreak=0; ghostBoost=0; ghostFlash=0; ghostRunning=false; },
     setSpeed(value) { target=value; if(value===0) boost=0; },
     setStage(value) { requestedBiome=Math.max(0,Math.min(3,value)); if(value===0) { currentBiome=0; transition=null; } },
     boost() { boost=BOOST_DURATION; },
