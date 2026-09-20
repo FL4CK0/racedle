@@ -79,7 +79,6 @@ h1 { font:800 clamp(58px,5.65vw,88px)/.92 'Barlow Condensed',Impact,sans-serif; 
 h1 em { color:var(--orange); font-style:normal; }
 .intro-copy { color:#b3c0b4; font-size:12px; line-height:1.85; margin-bottom:28px; }
 .primary-btn { border:0; border-radius:3px; background:var(--orange); color:#223629; padding:17px 20px; min-width:244px; display:inline-flex; justify-content:space-between; align-items:center; gap:30px; font-size:12px; font-weight:700; transition:background .15s,transform .15s; }
-.primary-btn:hover { background:#edffac; transform:translateY(-2px); }
 .primary-btn span { font-size:21px; line-height:1; }
 .race-facts { margin-top:19px; display:flex; align-items:center; gap:10px; font-size:10px; font-weight:600; color:#a3bcae; }
 .race-facts i { width:2px; height:2px; background:#b8cead; border-radius:50%; }
@@ -121,7 +120,6 @@ h1 em { color:var(--orange); font-style:normal; }
 .answers { display:grid; grid-template-columns:1fr; gap:11px; }
 .answer-btn { display:flex; align-items:center; gap:15px; text-align:left; width:100%; min-height:56px; padding:14px 17px; border:1px solid #a4c0a52d; border-radius:3px; background:#bbd5b907; font-size:15px; transition:background .15s,border .15s; }
 .answer-key { width:24px; height:24px; flex-shrink:0; display:grid; place-items:center; font-size:11px; color:#90aa97; border:1px solid #aec99b36; border-radius:2px; }
-.answer-btn:hover:not(:disabled) { border-color:#d7f08699; background:#d7f08612; }
 .answer-btn.correct { border-color:#cfeb82; background:#bfd97722; }
 .answer-btn.incorrect { border-color:#dc9a7d; background:#bd745b29; }
 .answer-btn:disabled { cursor:default; }
@@ -180,3 +178,4 @@ dialog li { padding:0 0 12px 5px; }dialog p { font-size:10px; font-weight:500; l
 @media(max-height:620px) and (min-width:801px) { body { min-height:760px; overflow-y:auto; }.dashboard { position:absolute; top:654px; bottom:auto; }.location-label { display:none; } }
 @media(max-height:620px) and (max-width:800px) { body { overflow-y:auto; } }
 @media(prefers-reduced-motion:reduce) { *,*:before,*:after { transition:none!important; } }
+@media(hover:hover) and (pointer:fine) { .primary-btn:hover { background:#edffac; transform:translateY(-2px); } .answer-btn:hover:not(:disabled) { border-color:#d7f08699; background:#d7f08612; } }
