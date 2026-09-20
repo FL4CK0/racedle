@@ -26,7 +26,6 @@ let allQuestions = [];
   let currentBiome = 0, requestedBiome = 0, transition = null;
   let reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const speedDisplay = document.getElementById('speed-display');
-  const biomeIndicator = document.getElementById('biome-indicator');
   const seeded = n => { const v = Math.sin(n * 78.233 + 43.13) * 43758.5453; return v - Math.floor(v); };
   const smoothstep = n => { const t = Math.max(0, Math.min(1, n)); return t * t * (3 - 2 * t); };
   const roadX = s => 140 * Math.sin(s / 480 + .5) + 60 * Math.sin(s / 1300 + .8);
@@ -374,7 +373,6 @@ let allQuestions = [];
     if (++frame%4===0) {
       speedDisplay.textContent=Math.round(speed);
       document.querySelectorAll('.speed-bars i').forEach((bar,i)=>bar.classList.toggle('lit',speed>(i+1)*20));
-      if (biomeIndicator) biomeIndicator.textContent=transition ? `${themes[transition.from].name} → ${themes[transition.to].name}` : themes[currentBiome].name;
     }
     requestAnimationFrame(draw);
   }
